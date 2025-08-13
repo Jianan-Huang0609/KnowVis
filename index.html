@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>读书笔记 · 指令生成器</title>
+  <!-- TailwindCSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root{ --primary:#F05E1C; }
+    .bento{ display:grid; grid-template-columns:repeat(12,1fr); gap:12px; }
+    .card{ background:#fff; border:1px solid #eee; border-radius:18px; padding:16px; box-shadow:0 10px 30px rgba(0,0,0,.04); }
+    .accent{ background: linear-gradient(135deg, rgba(240,94,28,0.14), rgba(240,94,28,0.03)); }
+    .bignum{ font-size:56px; font-weight:800; letter-spacing:-1px; line-height:1; color:var(--primary); }
+    .ghost{ color:#9ca3af }
+    .chip{ border:1px dashed rgba(240,94,28,.35); color:#ef6a2f; padding:2px 8px; border-radius:999px; font-size:12px; }
+    .btn{ background:var(--primary); color:#fff; border-radius:12px; padding:10px 16px; font-weight:600; }
+    .btn-outline{ border:1px solid var(--primary); color:var(--primary); background:#fff; border-radius:12px; padding:10px 16px; font-weight:600; }
+    textarea{ white-space:pre; }
+  </style>
+</head>
+<body class="bg-white text-gray-900">
+  <div class="max-w-6xl mx-auto px-4 py-8">
+    <!-- HERO -->
+    <header class="mb-8 bento">
+      <div class="card accent col-span-12 md:col-span-8 flex items-center justify-between">
+        <div>
+          <div class="bignum">读书笔记 · 指令生成器</div>
+          <p class="mt-2 text-sm text-gray-600">
+            CN 主信息 / <span class="ghost">EN for tiny hints.</span> 只需上传文件或粘贴文字 → 一键生成可给 AI 使用的完整 Prompt（含单文件 HTML 站点要求）。
+          </p>
+        </div>
+        <div class="hidden md:block text-right">
+          <div class="chip">Bento Grid</div>
+          <div class="mt-2 chip">#F05E1C Highlight</div>
+        </div>
+      </div>
+      <div class="card col-span-12 md:col-span-4">
+        <label class="text-sm text-gray-500">主题高亮色</label>
+        <div class="mt-2 flex items-center gap-3">
+          <input id="color" type="color" value="#F05E1C" class="w-12 h-10 rounded" />
+          <input id="colorHex" type="text" value="#F05E1C" class="border rounded px-3 py-2 w-40" />
+        </div>
+        <p class="mt-2 text-xs text-gray-500">用于网页主题与勾线图渐变透明度（不同色**不互相渐变**）。</p>
+      </div>
+    </header>
+
+    <!-- FORM -->
+    <section class="bento">
+      <div class="card col-span-12 md:col-span-8">
+        <div class="flex items-center justify-between">
+          <h2 class="font-bold text-xl">1 · 输入材料 / Inputs</h2>
+          <span class="chip">Attachments / Text / Links</span>
+        </div>
+        <div class="mt-4 grid md:grid-cols-2 gap-4">
+          <div>
+            <label class="text-sm text-gray-500">项目标题（中文大字）</label>
+            <input id="title" class="mt-1 border rounded px-3 py-2 w-full" placeholder="软件注册指导原则要点" />
+          </div>
+          <div>
+            <label class="text-sm text-gray-500">输出 HTML 文件名</label>
+            <input id="outname" class="mt-1 border rounded px-3 py-2 w-full" placeholder="medsw_guidance_notes" />
+          </div>
+          <div>
+            <label class="text-sm text-gray-500">语言配比（CN:EN）</label>
+            <input id="langmix" class="mt-1 border rounded px-3 py-2 w-full" placeholder="CN:EN = 80:20" />
+          </div>
+          <div>
+            <label class="text-sm text-gray-500">在线图表（可选，占位库名）</label>
+            <input id="chartlib" class="mt-1 border rounded px-3 py-2 w-full" placeholder="ECharts / Chart.js / Observable Plot" />
+          </div>
+        </div>
+        <div class="mt-4">
+          <label class="text-sm text-gray-500">添加链接（每行一个）</label>
+          <textarea id="links" rows="4" class="mt-1 border rounded px-3 py-2 w-full" placeholder="https://..."></textarea>
+        </div>
+        <div class="mt-4">
+          <label class="text-sm text-gray-500">粘贴文本（可多段）</label>
+          <textarea id="rawtext" rows="6" class="mt-1 border rounded px-3 py-2 w-full" placeholder="可粘贴学习摘录、要点、目录…"></textarea>
+        </div>
+        <div class="mt-4">
+          <label class="text-sm text-gray-500">上传文件（名称将写入 DOC_LIST，AI 端自行解析内容）</label>
+          <input id="files" type="file" multiple class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-600 hover:file:bg-orange-100" />
+          <p class="mt-1 text-xs text-gray-500">提示：本页面不会读取文件内容，仅把文件名加入指令清单；真正解析在 AI 端执行。</p>
+        </div>
+      </div>
+
+      <div class="card col-span-12 md:col-span-4">
+        <h2 class="font-bold text-xl">2 · 生成 / Generate</h2>
+        <p class="mt-2 text-sm text-gray-600">点击下方按钮，组合一段完整 Prompt。可直接复制到任意 AI。</p>
+        <div class="mt-4 flex flex-col gap-3">
+          <button class="btn" onclick="generatePrompt()">生成指令</button>
+          <button class="btn-outline" onclick="copyPrompt()">复制到剪贴板</button>
+          <button class="btn-outline" onclick="downloadPrompt()">下载为 .txt</button>
+        </div>
+        <div class="mt-6">
+          <label class="text-sm text-gray-500">快速预设</label>
+          <div class="mt-2 flex gap-2 flex-wrap">
+            <button class="chip" onclick="preset('software')">软件注册指导原则</button>
+            <button class="chip" onclick="preset('generic')">通用读书笔记</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card col-span-12">
+        <h2 class="font-bold text-xl">3 · 生成结果 / Prompt Output</h2>
+        <textarea id="output" rows="20" class="mt-3 w-full border rounded px-3 py-2 text-sm"></textarea>
+      </div>
+    </section>
+
+    <!-- FOOT -->
+    <footer class="mt-8 text-center text-xs text-gray-500">
+      Made for quick workflow · Bento UI · Single-file HTML · 可直接放到 GitHub Pages。
+    </footer>
+  </div>
+
+<script>
+  // Keep color hex synced
+  const color = document.getElementById('color');
+  const colorHex = document.getElementById('colorHex');
+  color.addEventListener('input', e => { colorHex.value = e.target.value; document.documentElement.style.setProperty('--primary', e.target.value); });
+  colorHex.addEventListener('input', e => { if(/^#([0-9a-fA-F]{3}){1,2}$/.test(e.target.value)){ color.value = e.target.value; document.documentElement.style.setProperty('--primary', e.target.value);} });
+
+  function preset(type){
+    if(type === 'software'){
+      document.getElementById('title').value = '软件注册指导原则要点';
+      document.getElementById('outname').value = 'medsw_guidance_notes';
+      document.getElementById('langmix').value = 'CN:EN = 80:20';
+      document.getElementById('chartlib').value = 'ECharts';
+      document.getElementById('color').value = '#F05E1C';
+      document.getElementById('colorHex').value = '#F05E1C';
+      document.documentElement.style.setProperty('--primary', '#F05E1C');
+    } else {
+      document.getElementById('title').value = '读书笔记要点';
+      document.getElementById('outname').value = 'reading_notes_site';
+      document.getElementById('langmix').value = 'CN:EN = 70:30';
+      document.getElementById('chartlib').value = 'Chart.js';
+      document.getElementById('color').value = '#2F80ED';
+      document.getElementById('colorHex').value = '#2F80ED';
+      document.documentElement.style.setProperty('--primary', '#2F80ED');
+    }
+  }
+
+  function generateDocList(){
+    const files = Array.from(document.getElementById('files').files || []);
+    const links = document.getElementById('links').value.split('\n').map(s=>s.trim()).filter(Boolean);
+    const textLen = document.getElementById('rawtext').value.trim().length;
+    const parts = [];
+    files.forEach((f,i)=> parts.push(`- 附件${i+1}：${f.name}`));
+    links.forEach((l,i)=> parts.push(`- 链接${i+1}：${l}`));
+    if(textLen>0){ parts.push(`- 文本：已粘贴（约 ${textLen} 字）`); }
+    return parts.join('\n') || '- （稍后补充附件/链接/文本）';
+  }
+
+  function generatePrompt(){
+    const title = (document.getElementById('title').value || '软件注册指导原则要点').trim();
+    const primary = (document.getElementById('colorHex').value || '#F05E1C').trim();
+    const outname = (document.getElementById('outname').value || 'medsw_guidance_notes').trim();
+    const langmix = (document.getElementById('langmix').value || 'CN:EN = 80:20').trim();
+    const chartlib = (document.getElementById('chartlib').value || '').trim();
+    const doclist = generateDocList();
+
+    const intro = `你是“读书笔记网站生成器”。我会给你若干 **附件/文本/链接**，请完成两件事：`;
+
+    const taskA = `### 任务 A｜生成系统化读书笔记（Markdown）\n1. **总纲**：用 5–9 条“超大要点”概括核心思想，每条 ≤ 18 字；并给 1 句英文小字点缀。\n2. **章节框架**：按原文**目录顺序**输出两层结构（章节标题+3–6 条要点，动宾结构）。\n3. **术语卡**：列 8–15 个关键术语：中文（加粗）/ English（小字）/ 一句话定义。\n4. **图示草稿**：给出 2–3 个“勾线图”文字草稿（说明节点与连线）。\n5. **引用溯源**：每个要点标注【Ref】如 [来源名/章节/页码或段落]。`;
+
+    const taskB = `### 任务 B｜生成“单文件前端网页”的源码（可直接拷贝为 .html）\n**页面标题**：${title}\n\n**设计与交互硬性要求（必须执行）**\n1) 单页呈现，滚动节奏 5–8 段。\n2) **Bento Grid**：白底 + ${primary} 为高亮色；卡片圆角/间距统一。\n3) **超大视觉对比**：用超大数字/短词作锚点（01/02/03…）。\n4) **中英混排**：中文（大/粗/主信息），英文（小/细/点缀），不互为重复翻译。\n5) **勾线图可视化**：用 **SVG 勾线** 表达 2–3 个关系图，仅用高亮色**透明度**变化营造科技感（不同高亮色**不得互相渐变**）。\n6) **动效**：模仿 Apple 滚动动效，使用 **Framer Motion（CDN）** 或等价回退（IntersectionObserver+CSS）。\n7) **在线图表组件**：保留 1–2 个占位图表（${chartlib||'Chart.js 或 ECharts'}），主题色与文字样式统一。\n8) **技术栈（CDN）**：HTML5、**TailwindCSS 3+**、Framer Motion、Font Awesome/Material Icons。\n9) **结构**：仅输出**单一 HTML 文件**（CSS 用 CDN、JS 用内联 <script>）。\n10) **不可省略内容**：必须包含任务 A 的全部要点，并按**输入文本顺序**排布。\n11) **可配置**：暴露 CONFIG 对象（primaryColor:'${primary}', langMix:'${langmix}', density:'cozy'）。\n12) **导出按钮**：提供 exportHTML()，下载为 \`${outname}.html\`。`;
+
+    const materials = `**输入材料**\n${doclist}`;
+
+    const finalOut = `**最终输出**\n- 先给出 A（Markdown 笔记），再给出 B（完整 HTML 源码，单文件，可直接运行）。`;
+
+    const payload = `**PROMPT — BEGIN**\n\n${intro}\n\n${taskA}\n\n${taskB}\n\n${materials}\n\n${finalOut}\n\n**PROMPT — END**`;
+
+    document.getElementById('output').value = payload;
+  }
+
+  function copyPrompt(){
+    const el = document.getElementById('output');
+    el.select();
+    document.execCommand('copy');
+  }
+
+  function downloadPrompt(){
+    const text = document.getElementById('output').value || '';
+    const blob = new Blob(['\ufeff'+text], {type:'text/plain;charset=utf-8'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'prompt.txt'; a.click();
+    setTimeout(()=> URL.revokeObjectURL(url), 500);
+  }
+</script>
+</body>
+</html>
