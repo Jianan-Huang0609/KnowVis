@@ -1,1 +1,945 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>医疗器械软件注册指导原则要点精讲</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
+    <style>
+        /* 自定义全局样式 */
+        body {
+            background-color: #FFFFFF;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden; /* 防止一些元素动画时的横向滚动条 */
+        }
+        
+        /* Bento Grid 布局 */
+        .bento-grid {
+            display: grid;
+            gap: 1.5rem; /* 增加间距 */
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* 响应式调整列数 */
+        @media (min-width: 768px) {
+            .bento-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        /* Bento Item 样式 */
+        .bento-item {
+            background-color: #FFFFFF;
+            border-radius: 1rem;
+            padding: 2rem; /* 增加内边距 */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08); /* 稍微增强阴影 */
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* 添加hover过渡 */
+        }
+
+        .bento-item:hover {
+            transform: translateY(-5px); /* 悬停上浮效果 */
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12); /* 悬停阴影增强 */
+        }
+        
+        .bento-item > .relative.z-10 {
+            flex-grow: 1;
+            width: 100%;
+        }
+        
+        /* 主题高亮文本颜色 */
+        .highlight-text {
+            color: #F05E1C; /* 主题色 */
+        }
+        
+        /* 渐变背景叠加层 */
+        .gradient-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom right, rgba(240, 94, 28, 0.08), rgba(240, 94, 28, 0)); /* 调整透明度 */
+            z-index: 0;
+            border-radius: 1rem;
+        }
+        
+        /* 图标圆形背景 */
+        .icon-circle {
+            background-color: rgba(240, 94, 28, 0.12); /* 调整透明度 */
+            border-radius: 50%;
+            width: 55px; /* 稍微增大 */
+            height: 55px; /* 稍微增大 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #F05E1C;
+            font-size: 1.6rem; /* 稍微增大字体 */
+            margin-bottom: 1rem;
+        }
+        
+        /* 大数字背景水印 */
+        .large-number {
+            font-size: 6rem; /* 稍微增大 */
+            font-weight: bold;
+            color: #F05E1C;
+            line-height: 1;
+            position: absolute;
+            top: -1.5rem; /* 调整位置 */
+            right: 1rem;
+            opacity: 0.07; /* 调整透明度使其更柔和 */
+            z-index: 0;
+        }
+        
+        /* Header 部分样式 */
+        .header-section {
+            padding: 5rem 2rem; /* 增加内边距 */
+            text-align: center;
+            background-color: #F8F8F8; /* 稍微区别背景色 */
+            border-bottom: 1px solid #EDEDED;
+        }
+        
+        .header-section h1 {
+            font-size: 3.5rem; /* 调整字体大小 */
+            font-weight: 700; /* 使用 Tailwind 的 font-bold 对应的字体粗细 */
+            color: #2C3E50; /* 深色文字 */
+            margin-bottom: 1rem;
+        }
+        
+        .header-section p {
+            font-size: 1.25rem; /* text-xl 对应大小 */
+            color: #555;
+            line-height: 1.6;
+        }
+
+        /* 导航栏样式 */
+        .sticky-nav {
+            background-color: #333;
+            color: #fff;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .sticky-nav a {
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            transition: background-color 0.2s ease;
+        }
+        .sticky-nav a:hover {
+            background-color: #F05E1C;
+            color: #fff;
+        }
+
+        /* 表格响应式容器 */
+        .table-responsive-wrapper {
+            overflow-x: auto; /* 保证表格内容在小屏幕下可滚动 */
+            -webkit-overflow-scrolling: touch; /* 提高移动端滚动体验 */
+            margin-top: 1.5rem;
+        }
+
+        .table-responsive-wrapper table {
+            min-width: 600px; /* 确保表格在桌面端有足够的宽度 */
+            width: 100%;
+            border-collapse: collapse; /* 消除单元格边框间距 */
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .table-responsive-wrapper th, .table-responsive-wrapper td {
+            padding: 0.85rem 1.25rem; /* 统一内边距 */
+            text-align: left;
+            border: 1px solid #e2e8f0; /* 细边框 */
+        }
+
+        .table-responsive-wrapper thead tr {
+            background-color: #f7fafc; /* 表头背景色 */
+            color: #4a5568; /* 表头文字颜色 */
+            font-size: 0.95rem;
+        }
+        
+        .table-responsive-wrapper tbody tr:nth-child(even) {
+            background-color: #fcfcfc; /* 斑马条纹效果 */
+        }
+        .table-responsive-wrapper tbody tr:hover {
+            background-color: #f0f4f8; /* 行悬停效果 */
+        }
+
+        /* 仅在小屏幕下生效的表格样式 (小于768px) */
+        @media (max-width: 767px) {
+            .table-responsive-wrapper table {
+                display: block; /* 使表格在小屏幕下堆叠 */
+                width: 100%;
+            }
+            .table-responsive-wrapper thead {
+                display: none; /* 小屏幕隐藏表头 */
+            }
+            .table-responsive-wrapper tbody, .table-responsive-wrapper tr, .table-responsive-wrapper td {
+                display: block; /* 使行和单元格堆叠 */
+                width: 100%;
+            }
+            .table-responsive-wrapper tr {
+                margin-bottom: 1rem;
+                border: 1px solid #e2e8f0;
+                border-radius: 0.5rem;
+            }
+            .table-responsive-wrapper td {
+                border-bottom: 1px solid #e2e8f0;
+                padding: 0.75rem 1rem;
+                text-align: left;
+            }
+            .table-responsive-wrapper td:last-child {
+                border-bottom: 0; /* 最后一个单元格没有下边框 */
+            }
+            .table-responsive-wrapper td:before {
+                content: attr(data-label); /* 显示data-label作为标题 */
+                font-weight: bold;
+                display: inline-block;
+                min-width: 90px; /* 标题最小宽度 */
+                margin-right: 0.5rem;
+                color: #555;
+            }
+        }
+
+        /* 动画类 */
+        .animate-hidden {
+            opacity: 0;
+            transform: translateY(50px);
+        }
+        .animate-visible {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out; /* 稍长的过渡时间 */
+        }
+
+        /* Quiz specific styles */
+        .quiz-question {
+            background-color: #fdfdfd; /* Slightly different from fcfcfc for differentiation */
+            border: 1px solid #e0e0e0;
+            border-radius: 0.75rem;
+            padding: 1.5rem; /* Increased padding */
+            margin-bottom: 1.5rem; /* Increased margin */
+            box-shadow: 0 3px 7px rgba(0,0,0,0.06); /* Slightly enhanced shadow */
+        }
+        .quiz-question p.question-text { /* Specific class for question text styling */
+            font-weight: 600;
+            margin-bottom: 1rem; /* Ensure space before options */
+            color: #333;
+            font-size: 1.1em; /* Slightly larger question text */
+        }
+        .quiz-option-label {
+            display: block;
+            margin-bottom: 0.6rem; /* Spacing between options */
+            cursor: pointer;
+            padding: 0.85rem 1.1rem; /* More padding in options */
+            border: 1px solid #ddd;
+            border-radius: 0.375rem;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+            line-height: 1.5;
+        }
+        .quiz-option-label:hover {
+            background-color: #f5f5f5;
+            border-color: #ccc;
+        }
+        .quiz-question input[type="radio"] {
+            margin-right: 0.85rem; /* More space next to radio */
+            accent-color: #F05E1C; /* Change radio button color */
+            vertical-align: middle;
+        }
+        .refresh-btn, .check-btn { /* Common styling for buttons */
+            color: white;
+            padding: 0.85rem 1.7rem; /* Larger padding */
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            cursor: pointer;
+            margin-top: 1.5rem;
+            border: none; /* Remove default border */
+        }
+        .refresh-btn {
+            background-color: #F05E1C;
+        }
+        .refresh-btn:hover {
+            background-color: #D64C15;
+            transform: translateY(-1px);
+        }
+        .refresh-btn:active {
+            transform: translateY(0);
+        }
+
+        .check-btn {
+            background-color: #28a745; /* Green for check button */
+            margin-left: 0.5rem; /* Space from refresh button if inline */
+        }
+        .check-btn:hover {
+            background-color: #218838; /* Darker green */
+            transform: translateY(-1px);
+        }
+        .check-btn:active {
+            transform: translateY(0);
+        }
+        .check-btn:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+
+        /* Feedback styles */
+        .quiz-option-label.selected-correct {
+            background-color: #d1e7dd; 
+            border-color: #a3cfbb;
+            color: #0a3622;
+        }
+        .quiz-option-label.selected-incorrect {
+            background-color: #f8d7da;
+            border-color: #f1aeB5;
+            color: #58151c;
+        }
+        .quiz-option-label.actual-answer-highlight {
+            border: 2px solid #F05E1C;
+            box-shadow: 0 0 0 2px rgba(240, 94, 28, 0.3);
+        }
+        .feedback-indicator {
+            font-weight: bold;
+            margin-left: 10px; /* More space for indicator */
+        }
+        .feedback-indicator.correct {
+            color: #0a3622;
+        }
+        .feedback-indicator.incorrect {
+            color: #58151c;
+        }
+        .feedback-indicator.info {
+            color: #0d6efd;
+            font-style: italic;
+            font-weight: normal;
+        }
+        .question-overall-feedback {
+            margin-top: 0.75rem;
+            font-style: italic;
+            color: #555;
+        }
+
+    </style>
+</head>
+<body>
+    <nav class="sticky-nav">
+        <div class="container mx-auto flex flex-wrap justify-between items-center px-4">
+            <a href="#" class="text-2xl font-bold highlight-text hover:text-orange-300 transition-colors">软件注册指南</a>
+            <ul class="flex flex-wrap space-x-2 md:space-x-4 mt-2 md:mt-0">
+                <li><a href="#section-scope" class="hover:bg-orange-600">适用范围</a></li>
+                <li><a href="#section-concepts" class="hover:bg-orange-600">基本概念</a></li>
+                <li><a href="#section-lifecycle" class="hover:bg-orange-600">生存周期</a></li>
+                <li><a href="#section-testing" class="hover:bg-orange-600">测试验证</a></li>
+                <li><a href="#section-traceability" class="hover:bg-orange-600">可追溯性</a></li>
+                <li><a href="#section-updates" class="hover:bg-orange-600">软件更新</a></li>
+                <li><a href="#section-versioning" class="hover:bg-orange-600">软件版本</a></li>
+                <li><a href="#section-classification" class="hover:bg-orange-600">功能分类</a></li>
+                <li><a href="#section-quiz" class="hover:bg-orange-600">在线测试</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <header class="header-section">
+        <h1 class="highlight-text">医疗器械软件注册指导原则要点精讲</h1>
+        <p class="text-gray-600 text-xl max-w-2xl mx-auto">本指南深入剖析医疗器械软件注册的关键原则，助您全面理解合规要求，确保产品安全、有效、可靠上市。</p>
+        <p class="text-gray-400 text-sm mt-4">最近更新：2025年5月16日</p>
+    </header>
+
+    <main class="bento-grid">
+        <section id="section-scope" class="bento-item col-span-3 md:col-span-1" data-animate-on-scroll data-delay="0">
+            <div class="gradient-overlay"></div>
+            <div class="relative z-10">
+                <div class="icon-circle" role="img" aria-label="搜索图标"><i class="fas fa-search"></i></div>
+                <h2 class="text-3xl font-bold mb-4 highlight-text">适用范围：明确边界与基础</h2>
+                <p class="text-gray-700 text-lg">Defines the fundamental scope, categories, and classification of medical device software, laying the groundwork for registration compliance.</p>
+                <p class="text-gray-600 mt-2">本章核心在于界定指导原则的适用边界，明确何为医疗器械软件，以及其各类别的基础分类，这是理解后续所有注册要求的起点。</p>
+                <p class="mt-4 text-sm text-gray-500"><strong>核心要点：</strong> 区分独立软件与软件组件；理解通用型与专用型，内嵌型与外控型。</p>
+            </div>
+        </section>
+
+        <section id="section-concepts" class="bento-item col-span-3 md:col-span-2" data-animate-on-scroll data-delay="0.1">
+            <span class="large-number">01</span>
+            <div class="relative z-10">
+                <div class="icon-circle" role="img" aria-label="箱子图标"><i class="fas fa-boxes"></i></div>
+                <h2 class="text-3xl font-bold mb-4 highlight-text">基本概念: 软件分类</h2>
+                <p class="text-gray-700 text-lg mb-2">Basic Concepts: Software Classification</p>
+                <ul class="list-disc list-inside text-gray-600 space-y-1">
+                    <li>医疗器械软件的注册审查包括<strong class="highlight-text">独立软件</strong> (Independent Software) 和 <strong class="highlight-text">软件组件</strong> (Software Components)。</li>
+                    <li>独立软件: 根据其通用性可分为通用型 (General-purpose) & 专用型 (Dedicated).</li>
+                    <li>软件组件: 根据其与硬件的关系可分为内嵌型 (Embedded) & 外控型 (External Control).</li>
+                    <li><strong class="highlight-text">光子计数CT</strong> 多组件示例: 内嵌型 ("探测器数据采集和处理软件") + 外控型 ("图像重建和后处理软件").</li>
+                </ul>
+                <p class="mt-4 text-sm text-gray-500"><strong>理解要点：</strong> 正确分类是进行后续注册流程和风险评估的基础，需结合具体产品功能判断。</p>
+            </div>
+        </section>
+
+        <section class="bento-item col-span-3 md:col-span-1" data-animate-on-scroll data-delay="0.2">
+            <span class="large-number">02</span>
+            <div class="relative z-10">
+                <div class="icon-circle" role="img" aria-label="图层图标"><i class="fas fa-layer-group"></i></div>
+                <h2 class="text-3xl font-bold mb-4 highlight-text">基本概念: 软件类型</h2>
+                <p class="text-gray-700 text-lg mb-2">Basic Concepts: Software Types</p>
+                <ul class="list-disc list-inside text-gray-600 space-y-1">
+                    <li><strong class="highlight-text">系统软件</strong> (System Software): 保障计算机系统正常运行, 如操作系统、数据库软件。</li>
+                    <li><strong class="highlight-text">应用软件</strong> (Application Software): 实现特定需求的软件, 如浏览器、图像处理软件。</li>
+                    <li><strong class="highlight-text">中间件</strong> (Middleware): 位于系统软件与应用软件之间, 提供支持服务（如数据通信、消息队列）。</li>
+                    <li><strong class="highlight-text">支持软件</strong> (Support Software): 用于开发、测试、维护其他软件的工具，如IDE、编译器。</li>
+                    <li><strong class="highlight-text">必备软件</strong> (Essential Software): 医疗器械软件正常运行必需的医疗器械软件及医用中间件。</li>
+                    <li><strong class="highlight-text">外部软件环境</strong> (External Software Environment): 指系统软件、通用应用软件、通用中间件、支持软件等非医疗器械软件。</li>
+                </ul>
+                <p class="mt-4 text-sm text-gray-500"><strong>核心区分：</strong> 辨明软件类型有助于理解其在医疗器械产品中的角色和风险等级。</p>
+            </div>
+        </section>
+
+        <section id="section-lifecycle" class="bento-item col-span-3 md:col-span-2" data-animate-on-scroll data-delay="0.3">
+            <span class="large-number">03</span>
+            <div class="relative z-10">
+                <div class="icon-circle" role="img" aria-label="循环图标"><i class="fas fa-recycle"></i></div>
+                <h2 class="text-3xl font-bold mb-4 highlight-text">软件生存周期：系统化保障</h2>
+                <p class="text-gray-700 text-lg mb-2">Software Lifecycle: A Systematic Quality Assurance Process</p>
+                <p class="text-gray-600 mb-4">软件生命周期涵盖从构想到停用的所有阶段，每个阶段都对最终产品的安全性和有效性负责，是确保医疗器械软件质量和合规性的关键流程。</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="border border-gray-200 p-3 rounded-md relative">
+                        <h3 class="font-semibold highlight-text mb-1">1. 开发策划 (Planning)</h3>
+                        <p class="text-sm text-gray-600"><strong>目标：</strong> 明确项目目标、可行性、资源与风险，为开发奠定基础。</p>
+                        <i class="fas fa-cogs absolute top-3 right-3 text-gray-300 text-xl"></i>
+                    </div>
+                    <div class="border border-gray-200 p-3 rounded-md relative">
+                        <h3 class="font-semibold highlight-text mb-1">2. 需求分析 (Requirements Analysis)</h3>
+                        <p class="text-sm text-gray-600"><strong>核心：</strong> 将法规、标准及用户需求转化为清晰、可测试的软件需求（SRS）。</p>
+                        <i class="fas fa-list-alt absolute top-3 right-3 text-gray-300 text-xl"></i>
+                    </div>
+                    <div class="border border-gray-200 p-3 rounded-md relative">
+                        <h3 class="font-semibold highlight-text mb-1">3. 软件设计 (Software Design)</h3>
+                        <p class="text-sm text-gray-600"><strong>转化：</strong> 将软件需求（SRS）细化为详细设计方案（SDS），明确架构与模块。</p>
+                        <i class="fas fa-pencil-ruler absolute top-3 right-3 text-gray-300 text-xl"></i>
+                    </div>
+                    <div class="border border-gray-200 p-3 rounded-md relative">
+                        <h3 class="font-semibold highlight-text mb-1">4. 软件编码 (Coding)</h3>
+                        <p class="text-sm text-gray-600"><strong>实现：</strong> 依据详细设计方案（SDS），编写代码，构建可执行程序。</p>
+                        <i class="fas fa-code absolute top-3 right-3 text-gray-300 text-xl"></i>
+                    </div>
+                    <div class="border border-gray-200 p-3 rounded-md relative">
+                        <h3 class="font-semibold highlight-text mb-1">5. 软件测试 (Testing)</h3>
+                        <p class="text-sm text-gray-600"><strong>验证：</strong> 对软件进行多维度测试，确保系统功能、性能和稳定性符合预期。</p>
+                        <i class="fas fa-bug absolute top-3 right-3 text-gray-300 text-xl"></i>
+                    </div>
+                    <div class="border border-gray-200 p-3 rounded-md relative">
+                        <h3 class="font-semibold highlight-text mb-1">6. 软件发布 (Release)</h3>
+                        <p class="text-sm text-gray-600"><strong>固化：</strong> 将测试通过的软件定型为“产品版本”，准备投入市场。</p>
+                        <i class="fas fa-cloud-upload-alt absolute top-3 right-3 text-gray-300 text-xl"></i>
+                    </div>
+                    <div class="border border-gray-200 p-3 rounded-md relative">
+                        <h3 class="font-semibold highlight-text mb-1">7. 软件部署 (Deployment)</h3>
+                        <p class="text-sm text-gray-600"><strong>落地：</strong> 将软件交付并在最终用户环境中成功安装与运行。</p>
+                        <i class="fas fa-rocket absolute top-3 right-3 text-gray-300 text-xl"></i>
+                    </div>
+                    <div class="border border-gray-200 p-3 rounded-md relative">
+                        <h3 class="font-semibold highlight-text mb-1">8. 软件维护 (Maintenance)</h3>
+                        <p class="text-sm text-gray-600"><strong>持续保障：</strong> 后期修复问题、适配新环境、增加新功能，确保软件生命周期内的稳定运行。</p>
+                        <i class="fas fa-tools absolute top-3 right-3 text-gray-300 text-xl"></i>
+                    </div>
+                    <div class="border border-gray-200 p-3 rounded-md relative">
+                        <h3 class="font-semibold highlight-text mb-1">9. 软件停运 (Decommissioning)</h3>
+                        <p class="text-sm text-gray-600"><strong>终结：</strong> 有序终止软件销售、服务，并安全地退出市场。</p>
+                        <i class="fas fa-power-off absolute top-3 right-3 text-gray-300 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="section-testing" class="bento-item col-span-3" data-animate-on-scroll data-delay="0.4">
+            <span class="large-number">04</span>
+            <div class="relative z-10">
+                <div class="icon-circle" role="img" aria-label="检查图标"><i class="fas fa-check-circle"></i></div>
+                <h2 class="text-3xl font-bold mb-4 highlight-text">软件测试、验证、确认：质量的基石</h2>
+                <p class="text-gray-700 text-lg mb-4">Software Testing, Verification, and Validation (V&V)</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div class="p-4 border rounded-lg shadow-sm">
+                        <h3 class="font-bold highlight-text text-xl mb-2">测试 (Testing)</h3>
+                        <p class="text-gray-600 text-sm">关注“软件是否正确运行？（Did we build the product right?）”，即检查软件内部的错误、缺陷。包括黑盒测试 (Black Box), 白盒测试 (White Box), 灰盒测试 (Gray Box)。</p>
+                    </div>
+                    <div class="p-4 border rounded-lg shadow-sm">
+                        <h3 class="font-bold highlight-text text-xl mb-2">验证 (Verification)</h3>
+                        <p class="text-gray-600 text-sm">关注“我们是否正确地构建了产品？（Are we building the product right?）”，通过提供客观证据认定软件开发、维护某阶段的输出满足输入要求 (e.g., code structure meets SRS)。</p>
+                    </div>
+                    <div class="p-4 border rounded-lg shadow-sm">
+                        <h3 class="font-bold highlight-text text-xl mb-2">确认 (Validation)</h3>
+                        <p class="text-gray-600 text-sm">关注“我们构建的产品是否正确？（Are we building the right product?）”，通过提供客观证据认定软件满足用户需求和预期用途 (e.g., solves real-world problems)。</p>
+                    </div>
+                </div>
+                <p class="text-gray-700 mt-4 mb-6"><strong>关键点：</strong> 测试是发现缺陷，验证是确保“按图施工”，确认是确保“图纸正确且有用”。三者层层递进，共同保障软件质量。</p>
+
+                <h3 class="text-2xl font-bold highlight-text mb-3">软件测试分类 (Software Testing Categories)</h3>
+                <div class="table-responsive-wrapper">
+                    <table class="min-w-full bg-white border border-gray-200 rounded-lg">
+                        <thead>
+                            <tr class="bg-gray-100 text-gray-700 text-left">
+                                <th class="py-2 px-4 border-b">分类角度</th>
+                                <th class="py-2 px-4 border-b">分类类型</th>
+                                <th class="py-2 px-4 border-b">定义/特点</th>
+                                <th class="py-2 px-4 border-b">适用范围/说明</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="py-2 px-4 border-b font-semibold" rowspan="3" data-label="分类角度">测试依据角度</td>
+                                <td class="py-2 px-4 border-b" data-label="分类类型">🔹黑盒测试</td>
+                                <td class="py-2 px-4 border-b" data-label="定义/特点">基于输入/输出，不关注内部代码逻辑</td>
+                                <td class="py-2 px-4 border-b" data-label="适用范围/说明">功能验证为主，常用于系统测试、用户测试、第三方测试</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 px-4 border-b" data-label="分类类型">🔹白盒测试</td>
+                                <td class="py-2 px-4 border-b" data-label="定义/特点">基于源代码进行逻辑覆盖测试</td>
+                                <td class="py-2 px-4 border-b" data-label="适用范围/说明">用于单元测试、代码覆盖率分析</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 px-4 border-b" data-label="分类类型">🔹灰盒测试</td>
+                                <td class="py-2 px-4 border-b" data-label="定义/特点">黑盒 + 白盒结合，部分了解内部逻辑</td>
+                                <td class="py-2 px-4 border-b" data-label="适用范围/说明">常用于集成测试</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 px-4 border-b font-semibold" rowspan="3" data-label="分类角度">测试进程角度</td>
+                                <td class="py-2 px-4 border-b" data-label="分类类型">🔹单元测试</td>
+                                <td class="py-2 px-4 border-b" data-label="定义/特点">测试最小功能单元，通常采用白盒方法</td>
+                                <td class="py-2 px-4 border-b" data-label="适用范围/说明">由开发人员实施，关注内部逻辑正确性</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 px-4 border-b" data-label="分类类型">🔹集成测试</td>
+                                <td class="py-2 px-4 border-b" data-label="定义/特点">多个单元组成的模块之间的接口、交互测试</td>
+                                <td class="py-2 px-4 border-b" data-label="适用范围/说明">检查模块之间的数据流是否正确</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 px-4 border-b" data-label="分类类型">🔹系统测试</td>
+                                <td class="py-2 px-4 border-b" data-label="定义/特点">整体系统行为验证，通常采用黑盒方法</td>
+                                <td class="py-2 px-4 border-b" data-label="适用范围/说明">验证软件是否满足用户需求，常包含多种测试类型</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 px-4 border-b font-semibold" rowspan="9" data-label="分类角度">测试内容角度<br>(系统测试细分)</td>
+                                <td class="py-2 px-4 border-b" data-label="分类类型">🔹功能测试</td>
+                                <td class="py-2 px-4 border-b" data-label="定义/特点">检查功能实现是否符合需求</td>
+                                <td class="py-2 px-4 border-b" data-label="适用范围/说明">是否正确执行任务</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 px-4 border-b" data-label="分类类型">🔹性能测试</td>
+                                <td class="py-2 px-4 border-b" data-label="定义/特点">响应速度、处理能力是否符合性能需求</td>
+                                <td class="py-2 px-4 border-b" data-label="适用范围/说明">高负载、大数据量场景</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 px-4 border-b" data-label="分类类型">🔹并发/压力测试</td>
+                                <td class="py-2 px-4 border-b" data-label="定义/特点">多用户并发访问或极限使用下系统稳定性</td>
+                                <td class="py-2 px-4 border-b" data-label="适用范围/说明">并发连接、极端数据写入测试</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 px-4 border-b" data-label="分类类型">🔹接口测试</td>
+                                <td class="py-2 px-4 border-b" data-label="定义/特点">软件模块间/软硬件之间接口的输入输出行为是否正确</td>
+                                <td class="py-2 px-4 border-b" data-label="适用范围/说明">协议、数据格式、错误码校验</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 px-4 border-b" data-label="分类类型">🔹内存测试</td>
+                                <td class="py-2 px-4 border-b" data-label="定义/特点">内存泄漏、溢出、使用效率等问题检测</td>
+                                <td class="py-2 px-4 border-b" data-label="适用范围/说明">用于发现难以复现的长期运行问题</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 px-4 border-b" data-label="分类类型">🔹兼容性测试</td>
+                                <td class="py-2 px-4 border-b" data-label="定义/特点">在不同平台、操作系统、硬件配置下的运行表现</td>
+                                <td class="py-2 px-4 border-b" data-label="适用范围/说明">各种设备/系统组合场景</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 px-4 border-b" data-label="分类类型">🔹用户界面测试</td>
+                                <td class="py-2 px-4 border-b" data-label="定义/特点">检查UI元素是否显示正确，布局是否一致，交互是否正常</td>
+                                <td class="py-2 px-4 border-b" data-label="适用范围/说明">医疗设备需保持一致性和无误导性</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 px-4 border-b" data-label="分类类型">🔹安装卸载测试</td>
+                                <td class="py-2 px-4 border-b" data-label="定义/特点">检查软件能否正常安装/卸载，文件是否正确生成/删除</td>
+                                <td class="py-2 px-4 border-b" data-label="适用范围/说明">包含注册表项、配置文件、依赖库处理</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 px-4 border-b" data-label="分类类型">🔹安全测试</td>
+                                <td class="py-2 px-4 border-b" data-label="定义/特点">系统是否具备抵御外部攻击或错误操作的能力，权限控制是否完善</td>
+                                <td class="py-2 px-4 border-b" data-label="适用范围/说明">涉及数据安全、访问控制、身份验证</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 px-4 border-b font-semibold" rowspan="3" data-label="分类角度">测试实施主体角度</td>
+                                <td class="py-2 px-4 border-b" data-label="分类类型">🔹内部测试</td>
+                                <td class="py-2 px-4 border-b" data-label="定义/特点">由开发方执行测试</td>
+                                <td class="py-2 px-4 border-b" data-label="适用范围/说明">可结合黑/白/灰盒测试</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 px-4 border-b" data-label="分类类型">🔹用户测试</td>
+                                <td class="py-2 px-4 border-b" data-label="定义/特点">最终用户在真实或模拟场景中测试软件行为</td>
+                                <td class="py-2 px-4 border-b" data-label="适用范围/说明">验证是否符合用户需求与临床场景</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 px-4 border-b" data-label="分类类型">🔹第三方测试</td>
+                                <td class="py-2 px-4 border-b" data-label="定义/特点">独立第三方机构按标准执行，客观评估软件质量</td>
+                                <td class="py-2 px-4 border-b" data-label="适用范围/说明">强调独立性，适用于注册申报时的外部检测</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 px-4 border-b font-semibold" data-label="分类角度">特殊测试类型</td>
+                                <td class="py-2 px-4 border-b" data-label="分类类型">🔹回归测试</td>
+                                <td class="py-2 px-4 border-b" data-label="定义/特点">对软件更新后进行测试，确保新修改未影响既有功能</td>
+                                <td class="py-2 px-4 border-b" data-label="适用范围/说明">按更新类型选择合适级别</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="section-traceability" class="bento-item col-span-3" data-animate-on-scroll data-delay="0.5">
+            <span class="large-number">05</span>
+            <div class="relative z-10">
+                <div class="icon-circle" role="img" aria-label="链条图标"><i class="fas fa-link"></i></div>
+                <h2 class="text-3xl font-bold mb-4 highlight-text">软件可追溯性分析：构建质量桥梁</h2>
+                <p class="text-gray-700 text-lg mb-2">软件可追溯性通过在软件生命周期各阶段建立明确关联，确保每个环节的产出都能“有据可查”，并且与上游需求紧密对应。这对于保障医疗器械软件的安全性、有效性至关重要。</p>
+                <p class="text-gray-600 mb-4">通过提供客观证据认定软件开发、软件维护某一阶段的输出满足输入要求。</p>
+
+                <h3 class="text-2xl font-bold highlight-text mb-3">全流程追溯示例 (Full Lifecycle Traceability Example)</h3>
+                <div class="table-responsive-wrapper">
+                    <table class="min-w-full bg-white border border-gray-200 rounded-lg">
+                        <thead>
+                            <tr class="bg-gray-100 text-gray-700 text-left">
+                                <th class="py-2 px-4 border-b">生命周期阶段</th>
+                                <th class="py-2 px-4 border-b">追溯关系</th>
+                                <th class="py-2 px-4 border-b">光子计数CT 实例解析 (如何体现追溯)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="py-2 px-4 border-b font-semibold" rowspan="2" data-label="生命周期阶段">需求分析</td>
+                                <td class="py-2 px-4 border-b" data-label="追溯关系">软件需求 ↔ 产品需求</td>
+                                <td class="py-2 px-4 border-b" data-label="光子计数CT 实例解析">“支持5个能级通道的能谱分辨图像”这一软件需求，直接对应产品说明书中的“实现多能谱图像诊断能力”。</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 px-4 border-b" data-label="追溯关系">设计输入 ↔ 软件需求</td>
+                                <td class="py-2 px-4 border-b" data-label="光子计数CT 实例解析">用户界面设计中的“能谱设置界面”元素，应能追溯到“支持能谱参数配置”的软件需求。</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 px-4 border-b font-semibold" rowspan="2" data-label="生命周期阶段">软件设计</td>
+                                <td class="py-2 px-4 border-b" data-label="追溯关系">软件设计 ↔ 软件需求</td>
+                                <td class="py-2 px-4 border-b" data-label="光子计数CT 实例解析">“图像重建算法模块”的设计，应能追溯到“能谱图像重建”的软件需求，并明确其实现逻辑。</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 px-4 border-b" data-label="追溯关系">测试方案 ↔ 软件设计</td>
+                                <td class="py-2 px-4 border-b" data-label="光子计数CT 实例解析">针对“探测器数据采集模块”的设计，制定“数据采集一致性测试方案”，确保设计被正确验证。</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 px-4 border-b font-semibold" rowspan="2" data-label="生命周期阶段">软件编码</td>
+                                <td class="py-2 px-4 border-b" data-label="追溯关系">源代码 ↔ 软件设计</td>
+                                <td class="py-2 px-4 border-b" data-label="光子计数CT 实例解析">实际编写的“能谱数据处理代码”，应清晰地追溯到其在软件设计文档中对应的模块和功能描述。</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 px-4 border-b" data-label="追溯关系">软件版本 ↔ 源代码</td>
+                                <td class="py-2 px-4 border-b" data-label="光子计数CT 实例解析">发布的软件版本号（如V1.0.0）必须能精确关联到对应的源代码库中的特定提交（commit ID）。</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+        
+        <section id="section-quiz" class="bento-item col-span-3" data-animate-on-scroll data-delay="1">
+            <span class="large-number">10</span>
+            <div class="relative z-10">
+                <div class="icon-circle" role="img" aria-label="测试图标"><i class="fas fa-question-circle"></i></div>
+                <h2 class="text-3xl font-bold mb-4 highlight-text">在线测试：巩固知识点</h2>
+                <p class="text-gray-700 text-lg mb-4">通过以下测试题，检验您对医疗器械软件注册指导原则的掌握程度。随机抽取题目，祝您好运！</p>
+                <div id="quiz-container" class="space-y-6">
+                    </div>
+                <div class="mt-6 flex flex-wrap gap-4"> <button id="refresh-quiz-btn" class="refresh-btn">
+                        <i class="fas fa-redo-alt mr-2"></i>换一批题目
+                    </button>
+                    <button id="check-answers-btn" class="check-btn" style="display: none;">
+                        <i class="fas fa-check-double mr-2"></i>检验对错
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="text-center p-8 bg-gray-800 text-gray-300 mt-12">
+        <p>&copy; 2025 医疗器械软件注册指导原则精讲. 保留所有权利。</p>
+        <p class="text-sm mt-1">本内容仅供学习参考，具体请参照官方发布文件。</p>
+    </footer>
+
+    <script>
+        // Scroll animation
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const delay = parseFloat(entry.target.dataset.delay) || 0;
+                    setTimeout(() => {
+                        entry.target.classList.remove('animate-hidden');
+                        entry.target.classList.add('animate-visible');
+                    }, delay * 1000);
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('[data-animate-on-scroll]').forEach(el => {
+            el.classList.add('animate-hidden');
+            observer.observe(el);
+        });
+
+        // Quiz JavaScript
+        const allQuestions = [
+            {
+                id: "q1",
+                question: "医疗器械软件的注册审查主要包括以下哪两类？",
+                options: [
+                    { text: "独立软件与固件", value: "a" },
+                    { text: "独立软件与软件组件", value: "b" },
+                    { text: "系统软件与应用软件", value: "c" },
+                    { text: "内嵌型软件与外控型软件", value: "d" }
+                ],
+                correctAnswer: "b"
+            },
+            {
+                id: "q2",
+                question: "根据与硬件的关系，软件组件可分为内嵌型和以下哪一种？",
+                options: [
+                    { text: "通用型", value: "a" },
+                    { text: "专用型", value: "b" },
+                    { text: "外控型", value: "c" },
+                    { text: "支持型", value: "d" }
+                ],
+                correctAnswer: "c"
+            },
+            {
+                id: "q3",
+                question: "关注“软件是否正确运行？（Did we build the product right?）”描述的是软件质量保证中的哪个概念？",
+                options: [
+                    { text: "软件测试 (Testing)", value: "a" },
+                    { text: "软件验证 (Verification)", value: "b" },
+                    { text: "软件确认 (Validation)", value: "c" },
+                    { text: "软件维护 (Maintenance)", value: "d" }
+                ],
+                correctAnswer: "a"
+            },
+            {
+                id: "q4",
+                question: "关注“我们是否正确地构建了产品？（Are we building the product right?）”描述的是软件质量保证中的哪个概念？",
+                options: [
+                    { text: "软件测试 (Testing)", value: "a" },
+                    { text: "软件验证 (Verification)", value: "b" },
+                    { text: "软件确认 (Validation)", value: "c" },
+                    { text: "需求分析 (Requirements Analysis)", value: "d" }
+                ],
+                correctAnswer: "b"
+            },
+            {
+                id: "q5",
+                question: "关注“我们构建的产品是否正确？（Are we building the right product?）”描述的是软件质量保证中的哪个概念？",
+                options: [
+                    { text: "软件测试 (Testing)", value: "a" },
+                    { text: "软件验证 (Verification)", value: "b" },
+                    { text: "软件确认 (Validation)", value: "c" },
+                    { text: "软件部署 (Deployment)", value: "d" }
+                ],
+                correctAnswer: "c"
+            },
+            {
+                id: "q6",
+                question: "在软件生命周期中，将测试通过的软件定型为“产品版本”，准备投入市场的阶段是？",
+                options: [
+                    { text: "软件编码 (Coding)", value: "a" },
+                    { text: "软件测试 (Testing)", value: "b" },
+                    { text: "软件发布 (Release)", value: "c" },
+                    { text: "软件部署 (Deployment)", value: "d" }
+                ],
+                correctAnswer: "c"
+            },
+            {
+                id: "q7",
+                question: "以下哪项不属于“测试依据角度”的软件测试分类？",
+                options: [
+                    { text: "黑盒测试", value: "a" },
+                    { text: "白盒测试", value: "b" },
+                    { text: "单元测试", value: "c" }, // 单元测试是按测试进程角度
+                    { text: "灰盒测试", value: "d" }
+                ],
+                correctAnswer: "c"
+            },
+            {
+                id: "q8",
+                question: "确保软件更新后新修改未影响既有功能的测试称为什么测试？",
+                options: [
+                    { text: "功能测试", value: "a" },
+                    { text: "回归测试", value: "b" },
+                    { text: "兼容性测试", value: "c" },
+                    { text: "安全测试", value: "d" }
+                ],
+                correctAnswer: "b"
+            }
+        ];
+
+        let currentDisplayedQuestionsInfo = []; // Stores { id: 'q1', correctAnswer: 'b' } for displayed questions
+        const NUM_QUESTIONS_TO_DISPLAY = 3; // Number of questions to display at a time
+
+        const quizContainer = document.getElementById('quiz-container');
+        const refreshQuizBtn = document.getElementById('refresh-quiz-btn');
+        const checkAnswersBtn = document.getElementById('check-answers-btn');
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function loadQuiz() {
+            quizContainer.innerHTML = ''; // Clear previous questions
+            currentDisplayedQuestionsInfo = [];
+            
+            shuffleArray(allQuestions);
+            const selectedQuestions = allQuestions.slice(0, NUM_QUESTIONS_TO_DISPLAY);
+
+            selectedQuestions.forEach((questionData, qIndex) => {
+                currentDisplayedQuestionsInfo.push({ id: questionData.id, correctAnswer: questionData.correctAnswer });
+
+                const questionElement = document.createElement('div');
+                questionElement.className = 'quiz-question';
+                questionElement.id = `question-${questionData.id}`; // Use questionData.id for unique ID
+
+                const questionText = document.createElement('p');
+                questionText.className = 'question-text';
+                questionText.textContent = `${qIndex + 1}. ${questionData.question}`;
+                questionElement.appendChild(questionText);
+
+                const optionsContainer = document.createElement('div');
+                optionsContainer.className = 'options-container';
+
+                questionData.options.forEach((option, optIndex) => {
+                    const label = document.createElement('label');
+                    label.className = 'quiz-option-label';
+                    label.htmlFor = `${questionData.id}_option${optIndex}`;
+
+                    const radio = document.createElement('input');
+                    radio.type = 'radio';
+                    radio.name = `question_${questionData.id}`;
+                    radio.id = `${questionData.id}_option${optIndex}`;
+                    radio.value = option.value;
+                    
+                    const optionText = document.createTextNode(` ${option.text}`); // Add space before text
+                    
+                    const feedbackSpan = document.createElement('span');
+                    feedbackSpan.className = 'feedback-indicator';
+
+                    label.appendChild(radio);
+                    label.appendChild(optionText);
+                    label.appendChild(feedbackSpan);
+                    optionsContainer.appendChild(label);
+                });
+                questionElement.appendChild(optionsContainer);
+                
+                const overallFeedback = document.createElement('div');
+                overallFeedback.className = 'question-overall-feedback';
+                questionElement.appendChild(overallFeedback);
+
+                quizContainer.appendChild(questionElement);
+            });
+
+            checkAnswersBtn.style.display = selectedQuestions.length > 0 ? 'inline-block' : 'none';
+            checkAnswersBtn.disabled = false;
+            checkAnswersBtn.innerHTML = '<i class="fas fa-check-double mr-2"></i>检验对错';
+        }
+
+        function checkAnswers() {
+            currentDisplayedQuestionsInfo.forEach(qInfo => {
+                const questionElement = document.getElementById(`question-${qInfo.id}`);
+                if (!questionElement) return;
+
+                const selectedRadio = questionElement.querySelector(`input[name="question_${qInfo.id}"]:checked`);
+                const optionsLabels = questionElement.querySelectorAll('.quiz-option-label');
+                const overallFeedbackEl = questionElement.querySelector('.question-overall-feedback');
+                overallFeedbackEl.textContent = ''; // Clear previous overall feedback
+
+                // Reset styles and feedback for all options first
+                optionsLabels.forEach(label => {
+                    label.classList.remove('selected-correct', 'selected-incorrect', 'actual-answer-highlight');
+                    const feedbackSpan = label.querySelector('.feedback-indicator');
+                    if(feedbackSpan) {
+                        feedbackSpan.textContent = '';
+                        feedbackSpan.className = 'feedback-indicator';
+                    }
+                });
+
+                const correctAnswerValue = qInfo.correctAnswer;
+                let answeredCorrectly = false;
+
+                if (selectedRadio) {
+                    const selectedValue = selectedRadio.value;
+                    const selectedLabel = selectedRadio.closest('.quiz-option-label');
+                    const selectedFeedbackSpan = selectedLabel.querySelector('.feedback-indicator');
+
+                    if (selectedValue === correctAnswerValue) {
+                        selectedLabel.classList.add('selected-correct');
+                        if(selectedFeedbackSpan) {
+                            selectedFeedbackSpan.textContent = '✔ 正确';
+                            selectedFeedbackSpan.classList.add('correct');
+                        }
+                        answeredCorrectly = true;
+                    } else {
+                        selectedLabel.classList.add('selected-incorrect');
+                         if(selectedFeedbackSpan) {
+                            selectedFeedbackSpan.textContent = '✖ 错误';
+                            selectedFeedbackSpan.classList.add('incorrect');
+                        }
+                        // Highlight the actual correct answer
+                        optionsLabels.forEach(label => {
+                            const radio = label.querySelector('input[type="radio"]');
+                            if (radio && radio.value === correctAnswerValue) {
+                                label.classList.add('actual-answer-highlight');
+                                const correctFeedbackSpan = label.querySelector('.feedback-indicator');
+                                if (correctFeedbackSpan && !correctFeedbackSpan.textContent) { // Avoid overwriting if it was the selected (but wrong)
+                                     correctFeedbackSpan.textContent = '(正确答案)';
+                                     correctFeedbackSpan.classList.add('info');
+                                }
+                            }
+                        });
+                    }
+                } else {
+                    // Not answered
+                    overallFeedbackEl.textContent = '您未选择答案。';
+                     optionsLabels.forEach(label => {
+                        const radio = label.querySelector('input[type="radio"]');
+                        if (radio && radio.value === correctAnswerValue) {
+                            label.classList.add('actual-answer-highlight');
+                             const correctFeedbackSpan = label.querySelector('.feedback-indicator');
+                             if(correctFeedbackSpan) {
+                                correctFeedbackSpan.textContent = '(正确答案)';
+                                correctFeedbackSpan.classList.add('info');
+                            }
+                        }
+                    });
+                }
+            });
+            checkAnswersBtn.innerHTML = '<i class="fas fa-check-double mr-2"></i>已检验';
+            // checkAnswersBtn.disabled = true; // Optionally disable after checking
+        }
+
+        refreshQuizBtn.addEventListener('click', loadQuiz);
+        checkAnswersBtn.addEventListener('click', checkAnswers);
+
+        // Initial load of the quiz
+        document.addEventListener('DOMContentLoaded', loadQuiz);
+
+    </script>
+</body>
+</html>
