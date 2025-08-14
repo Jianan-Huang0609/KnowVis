@@ -1,413 +1,444 @@
 <!DOCTYPE html>
-<html lang="zh-CN" class="scroll-smooth">
+<html lang="zh-Hans">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI-RA | AI 赋能医疗器械注册文档</title>
-    
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Google Fonts: Noto Serif SC & Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>读书笔记 · 指令生成器</title>
+  <!-- TailwindCSS CDN -->
+  <script src="https://cdn.tailwindcss.com">
+  function resetForm(){
+    try{
+      // Text inputs
+      const ids = ['title','outname','langmix','chartlib','links','rawtext'];
+      ids.forEach(id => { const el = document.getElementById(id); if(el){ el.value = ''; }});
 
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+      // File input
+      const filesEl = document.getElementById('files'); if(filesEl){ filesEl.value=''; }
 
-    <!-- Custom Styles & Tailwind Config -->
-    <style type="text/tailwindcss">
-        @layer base {
-            body {
-                @apply bg-gray-50 text-gray-800;
-                font-family: 'Inter', 'Noto Serif SC', serif;
-            }
-            h1, h2, h3, h4, h5, h6 {
-                @apply font-bold font-['Noto_Serif_SC',_serif];
-            }
-            .title-highlight {
-                color: #F05E1C;
-            }
-            .document-card {
-                @apply bg-white rounded-lg shadow-lg p-6 transition-all duration-300 hover:shadow-2xl hover:-translate-y-2;
-            }
-            .document-card h4 {
-                @apply text-lg font-bold text-gray-700 border-b pb-2 mb-4;
-            }
-            .document-card .section-title {
-                @apply text-base font-bold text-gray-800 mt-4;
-            }
-            .document-card .law-text {
-                @apply text-sm text-blue-600 bg-blue-50 p-3 rounded-md mt-2;
-            }
-            .document-card .expert-text {
-                @apply text-sm text-orange-600 bg-orange-50 p-3 rounded-md mt-2;
-            }
-            .feature-card {
-                @apply bg-white p-6 rounded-lg shadow-md border-t-4 transition-all hover:shadow-xl hover:-translate-y-1;
-                border-color: #F05E1C;
-            }
-        }
-        @layer utilities {
-            .fade-in-up {
-                opacity: 0;
-                transform: translateY(20px);
-                transition: opacity 0.6s cubic-bezier(0.33, 1, 0.68, 1), transform 0.6s cubic-bezier(0.33, 1, 0.68, 1);
-            }
-            .fade-in-up.is-visible {
-                opacity: 1;
-                transform: translateY(0);
-            }
-            @media (prefers-reduced-motion: reduce) {
-                .fade-in-up {
-                    transition: none;
-                }
-            }
-        }
-        @media print {
-            body {
-                font-size: 10pt;
-                background-color: #fff;
-            }
-            .no-print {
-                display: none;
-            }
-            header, footer, section {
-                background-color: transparent !important;
-                color: #000 !important;
-            }
-            .document-card, .feature-card {
-                box-shadow: none;
-                border: 1px solid #ccc;
-            }
-            .mermaid {
-                background-color: transparent !important;
-            }
-        }
-    </style>
+      // Color reset
+      if(document.getElementById('colorHex')){ document.getElementById('colorHex').value = '#F05E1C'; }
+      if(document.getElementById('color')){ document.getElementById('color').value = '#F05E1C'; }
+      document.documentElement.style.setProperty('--primary', '#F05E1C');
+
+      // Outline controls
+      const density = document.getElementById('outlineDensity'); if(density){ density.value = 'standard'; }
+      const tables = document.getElementById('tables'); if(tables){ tables.value = 'auto'; }
+      const charts = document.getElementById('chartsHint'); if(charts){ charts.checked = true; }
+      const bullets = document.getElementById('bulletsMax'); if(bullets){ bullets.value = 6; }
+      const moduleSplit = document.getElementById('moduleSplit'); if(moduleSplit){ moduleSplit.checked = true; }
+
+      // Output & status
+      const out = document.getElementById('output'); if(out){ out.value=''; }
+      const status = document.getElementById('status'); if(status){ status.textContent = '🧹 已重置'; }
+    }catch(e){
+      const out = document.getElementById('output'); if(out){ out.value = '❌ 重置失败：' + e.message; }
+      const status = document.getElementById('status'); if(status){ status.textContent = '❌ 重置失败'; }
+      console.error(e);
+    }
+  }
+
+</script>
+  <style>
+    :root{ --primary:#F05E1C; }
+    .bento{ display:grid; grid-template-columns:repeat(12,1fr); gap:12px; }
+    .card{ background:#fff; border:1px solid #eee; border-radius:18px; padding:16px; box-shadow:0 10px 30px rgba(0,0,0,.04); }
+    .accent{ background: linear-gradient(135deg, rgba(240,94,28,0.14), rgba(240,94,28,0.03)); }
+    .bignum{ font-size:56px; font-weight:800; letter-spacing:-1px; line-height:1; color:var(--primary); }
+    .ghost{ color:#9ca3af }
+    .chip{ border:1px dashed rgba(240,94,28,.35); color:#ef6a2f; padding:2px 8px; border-radius:999px; font-size:12px; }
+    .btn{ background:var(--primary); color:#fff; border-radius:12px; padding:10px 16px; font-weight:600; }
+    .btn-outline{ border:1px solid var(--primary); color:var(--primary); background:#fff; border-radius:12px; padding:10px 16px; font-weight:600; }
+    textarea{ white-space:pre; }
+    .switch { position: relative; display: inline-block; width: 42px; height: 24px; }
+    .switch input { display:none; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #e5e7eb; transition: .2s; border-radius:999px; }
+    .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .2s; border-radius: 50%; box-shadow: 0 1px 3px rgba(0,0,0,.2); }
+    input:checked + .slider { background-color: var(--primary); }
+    input:checked + .slider:before { transform: translateX(18px); }
+  </style>
 </head>
-<body class="antialiased">
-
-    <!-- CONFIGURATION OBJECT -->
-    <script>
-        const CONFIG = {
-            primaryColor: '#F05E1C',
-            langMix: '80: 20',
-            density: 'cozy'
-        };
-    </script>
-
-    <!-- HEADER -->
-    <header class="bg-white container mx-auto px-4 py-12 md:py-16 text-center border-b border-gray-200">
-        <h1 class="text-4xl md:text-6xl font-black">AI 赋能医疗器械注册文档</h1>
-        <h2 class="mt-6 text-2xl md:text-3xl" style="color: #F05E1C;">Gen-AI 关注 RA 的每一步</h2>
-        <div class="mt-6 text-sm text-gray-400">
-            <span>发布日期: 2025年8月14日</span> / <span>作者: AI-RA 生成器</span>
+<body class="bg-white text-gray-900">
+  <div class="max-w-6xl mx-auto px-4 py-8">
+    <!-- HERO -->
+    <header class="mb-8 bento">
+      <div class="card accent col-span-12 md:col-span-8 flex items-center justify-between">
+        <div>
+          <div class="bignum">读书笔记 · 指令生成器</div>
+          <p class="mt-2 text-sm text-gray-600">
+            CN 主信息 / <span class="ghost">EN for tiny hints.</span>
+            上传文件或粘贴文字 → 一键生成网页设计 Prompt（含单文件 HTML 站点要求 + 大纲生成方向）。
+          </p>
         </div>
+        <div class="hidden md:block text-right">
+          <div class="chip">Bento Grid</div>
+          <div class="mt-2 chip">#F05E1C Highlight</div>
+        </div>
+      </div>
+      <div class="card col-span-12 md:col-span-4">
+        <label class="text-sm text-gray-500">主题高亮色</label>
+        <div class="mt-2 flex items-center gap-3">
+          <input id="color" type="color" value="#F05E1C" class="w-12 h-10 rounded" />
+          <input id="colorHex" type="text" value="#F05E1C" class="border rounded px-3 py-2 w-40" />
+        </div>
+        <p class="mt-2 text-xs text-gray-500">支持 #F05E1C 这样的十六进制。非法值会自动回退到 #F05E1C。</p>
+      </div>
     </header>
 
-    <!-- MAIN BODY -->
-    <main class="container mx-auto px-4 py-16">
-        
-        <!-- Core Functions Section -->
-        <section class="fade-in-up">
-            <h2 class="text-3xl md:text-4xl text-center mb-12">核心功能</h2>
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <!-- Left Column -->
-                <div class="bg-white p-8 rounded-lg shadow-md">
-                    <h3 class="text-2xl mb-4 text-center">注册文档框架生成</h3>
-                    <p class="text-gray-600 text-center mb-6">自动从法规原文提取章节结构，并融合专家解读，一键生成合规文档框架。</p>
-                    <ul class="space-y-3">
-                        <li class="flex items-start"><i class="fa-solid fa-file-import mr-3 mt-1.5" style="color: #F05E1C;"></i><span><strong>提取框架</strong>：从法规原文自动构建注册文档模板。</span></li>
-                        <li class="flex items-start"><i class="fa-solid fa-magnifying-glass mr-3 mt-1.5" style="color: #F05E1C;"></i><span><strong>解析法规</strong>：智能匹配法规要求至对应的章节下。</span></li>
-                        <li class="flex items-start"><i class="fa-solid fa-user-tie mr-3 mt-1.5" style="color: #F05E1C;"></i><span><strong>生成解读</strong>：基于知识库为法规要求生成通俗解读。</span></li>
-                        <li class="flex items-start"><i class="fa-solid fa-wand-magic-sparkles mr-3 mt-1.5" style="color: #F05E1C;"></i><span><strong>自动排版</strong>：统一应用预设的标题与文本格式。</span></li>
-                    </ul>
-                </div>
-                <!-- Right Column -->
-                <div class="bg-white p-8 rounded-lg shadow-md">
-                    <h3 class="text-2xl mb-4 text-center">注册文档一致性核查</h3>
-                    <p class="text-gray-600 text-center mb-6">对固定模块（如产品名称、型号）在多份文件中进行智能比对，确保信息统一。</p>
-                    <ul class="space-y-3">
-                        <li class="flex items-start"><i class="fa-solid fa-check-double mr-3 mt-1.5" style="color: #F05E1C;"></i><span><strong>核查一致性</strong>：对固定模块进行跨文档比对。</span></li>
-                        <li class="flex items-start"><i class="fa-solid fa-map-location-dot mr-3 mt-1.5" style="color: #F05E1C;"></i><span><strong>定位差异点</strong>：自动生成差异对照表与修改建议。</span></li>
-                        <li class="flex items-start"><i class="fa-solid fa-list-check mr-3 mt-1.5" style="color: #F05E1C;"></i><span><strong>检查完整性</strong>：结合技术要求，检查文档模块完整度。</span></li>
-                        <li class="flex items-start"><i class="fa-solid fa-file-contract mr-3 mt-1.5" style="color: #F05E1C;"></i><span><strong>输出报告</strong>：一键生成具体模块的一致性核查报告。</span></li>
-                    </ul>
-                </div>
-            </div>
-        </section>
-
-        <!-- Document Examples Section -->
-        <section class="mt-24 fade-in-up">
-            <h2 class="text-3xl md:text-4xl text-center mb-12">应用案例：文档预览</h2>
-            <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
-                <!-- Document 1 -->
-                <article class="document-card">
-  <h4>案例1: 有源医疗器械使用期限评价报告</h4>
-
-  <!-- 1 目的 -->
-  <div>
-    <p class="section-title">1、目的</p>
-    <p class="law-text"><strong>【法规原文要求】</strong>“医疗器械注册申请人应在注册资料中明确产品的使用期限并提供相关的验证资料。本指导原则适用于有源医疗器械，既包括有源非植入类器械（医疗器械软件除外），也包括有源植入类医疗器械。”（见第一章 适用范围）</p>
-    <div class="expert-text">
-      <strong>【专家解读】</strong>
-      <ul class="list-disc pl-5 mt-2 space-y-1">
-        <li>本报告需依据《医疗器械说明书和标签管理规定》及《医疗器械注册与备案管理办法》制定；</li>
-        <li>适用范围涵盖所有有源医疗器械（含植入类），但排除独立软件类产品；</li>
-        <li>需验证投入使用前后安全有效性，覆盖运输/储存与使用阶段。</li>
-      </ul>
-    </div>
-  </div>
-
-  <!-- 2 评价方式 -->
-  <div>
-    <p class="section-title">2、评价方式</p>
-    <p class="law-text"><strong>【法规原文要求】</strong>“确定产品使用期限的方式一般有两种：1. 预先设定使用期限后验证合理性；2. 通过方法最终确定使用期限。”（见第四章 评价方式）</p>
-    <div class="expert-text">
-      <strong>【专家解读】</strong>
-      <ul class="list-disc pl-5 mt-2 space-y-1">
-        <li>方式一需有同类产品经验数据或成熟部件历史数据支撑；</li>
-        <li>方式二更适用于创新产品/新技术系统，需建立完整验证体系；</li>
-        <li>两种方式均可组合验证（加速老化 + 实时测试 + 仿真计算）。</li>
-      </ul>
-    </div>
-  </div>
-
-  <!-- 3 评价路径 -->
-  <div>
-    <p class="section-title">3、评价路径</p>
-    <p class="law-text"><strong>【法规原文要求】</strong>“路径1：直接产品验证；路径2：分解为子系统/部件评价，分解方式包括关键/非关键部件、可更换/不可更换部件等。”（见第五章 评价路径）</p>
-    <div class="expert-text">
-      <strong>【专家解读】</strong>
-      <ul class="list-disc pl-5 mt-2 space-y-1">
-        <li>路径1适用于结构较简单产品（如血压计、心电图机），需完整覆盖临床使用场景；</li>
-        <li>路径2需建立“部件分类矩阵”，按“不可更换关键部件”确定整机基准期限；</li>
-        <li>复杂系统推荐混合路径（整机验证 + 关键部件补充验证）。</li>
-      </ul>
-    </div>
-  </div>
-
-  <!-- 4 影响因素分析 -->
-  <div>
-    <p class="section-title">4、影响因素分析</p>
-    <p class="law-text"><strong>【法规原文要求】</strong>“应综合考虑关键部件、使用强度、运输环境、清洗消毒、维护维修等七方面因素。”（见第六章 影响因素）</p>
-    <div class="expert-text">
-      <strong>【专家解读】</strong>
-      <ul class="list-disc pl-5 mt-2 space-y-1">
-        <li>关键部件需建立失效模式库（如电池容量衰减曲线、机械臂疲劳曲线）；</li>
-        <li>使用强度验证应包含极限工况测试（最大功率 × 1.5 安全系数）；</li>
-        <li>运输环境评估覆盖极端温湿度循环（-40℃～70℃）与振动谱；</li>
-        <li>维护维修记录纳入寿命模型（建议 MTBF ≥ 宣称寿命 × 3）。</li>
-      </ul>
-    </div>
-  </div>
-
-  <!-- 5 评估方法概述 -->
-  <div>
-    <p class="section-title">5、评估方法概述</p>
-    <p class="law-text"><strong>【法规原文要求】</strong>“具体方法包括：1. 加速老化试验；2. 同类产品经验数据；3. 可靠性评估分析方法。”（见第七章 评价方法）</p>
-    <div class="expert-text">
-      <strong>【专家解读】</strong>
-      <ul class="list-disc pl-5 mt-2 space-y-1">
-        <li>加速老化需建立等效模型（阿伦尼乌斯：电子部件；Miner 准则：机械部件）；</li>
-        <li>同类产品类比需技术等同性证明（材料一致性 ≥ 90%，工艺相似度 ≥ 85%）；</li>
-        <li>可靠性评估应含 FMEA 与蒙特卡洛仿真；</li>
-        <li>植入类产品需补充生物相容性时效研究。</li>
-      </ul>
-    </div>
-  </div>
-
-  <!-- 6 结论 -->
-  <div>
-    <p class="section-title">6、结论</p>
-    <p class="law-text"><strong>【法规原文要求】</strong>“需在说明书、标签及风险分析资料中明确使用期限，动态评估产品生命周期风险。”（见第八章 使用期限的说明）</p>
-    <div class="expert-text">
-      <strong>【专家解读】</strong>
-      <ul class="list-disc pl-5 mt-2 space-y-1">
-        <li>结论遵循“最短板原则”，以不可更换关键部件寿命为基准；</li>
-        <li>建立上市后监测机制（建议前 3 年每季度提交故障率报告）；</li>
-        <li>变更管理需含寿命影响评估（材料/工艺变更需重新验证）；</li>
-        <li>最终宣称期限建议保留 20% 安全余量（例：验证 10 年，宣称 8 年）。</li>
-      </ul>
-      <p class="mt-3 text-xs opacity-80">注：如需二/三级标题继续展开，可按你的细分要求补充子章节。</p>
-    </div>
-  </div>
-</article>
-
-                    <h4>案例2: 一致性核查报告【产品名称】</h4>
-                    <p class="text-sm text-gray-600 mb-4"><strong>基准：</strong>CH3. 4. 2《产品技术要求》→ 超声诊断系统</p>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-sm text-left">
-                            <thead class="bg-gray-100">
-                                <tr>
-                                    <th class="p-2">文档</th>
-                                    <th class="p-2">提取值</th>
-                                    <th class="p-2">一致性</th>
-                                    <th class="p-2">建议</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="border-b"><td class="p-2">CH1. 11. 1</td><td class="p-2">超声诊断系统</td><td class="p-2 text-green-600">完全一致</td><td class="p-2">维持一致</td></tr>
-                                <tr class="border-b"><td class="p-2">CH1. 5</td><td class="p-2">超声诊断系统</td><td class="p-2 text-green-600">完全一致</td><td class="p-2">维持一致</td></tr>
-                                <tr class="border-b"><td class="p-2">CH2. 4. 1</td><td class="p-2 text-gray-400">无相关内容</td><td class="p-2 text-yellow-600">缺失</td><td class="p-2">引用基准</td></tr>
-                                <tr class="border-b bg-red-50"><td class="p-2">CH3. 5. 5</td><td class="p-2">系统超声诊断系统</td><td class="p-2 text-red-600 font-bold">不一致</td><td class="p-2">去掉冗余“系统”</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </article>
-            </div>
-        </section>
-    </main>
-
-    <!-- MID-BREAKER: FLOWCHART -->
-    <section class="w-full py-16 md:py-24 my-16 bg-white">
-        <div class="container mx-auto px-4 fade-in-up">
-            <h2 class="text-3xl md:text-4xl text-center mb-4">核心系统流程</h2>
-            <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">系统以 Gen-AI 为核心，串联文档生成与核查两大模块，形成闭环的智能处理流程。</p>
-            <div class="max-w-4xl mx-auto p-4 border border-gray-200 rounded-lg bg-white shadow-lg">
-                <pre class="mermaid text-center">
-mindmap
-  root((Gen-AI))
-    注册文档生成
-      1. 生成目录 (法规+历史)
-      2. 子章节法规要求
-      3. 子章节专家解读
-      4. (未来) 固定模块自动生成
-    注册文档核查
-      1. 一致性审查
-        单一模块: 名称/型号等
-        多个模块: 配置表/核心部件
-      2. 完整性核查
-        与技术文件对比
-        查缺补漏
-      3. 专家要求类审查
-        过往相似案例
-        展示LLM思考过程
-                </pre>
-            </div>
+    <!-- FORM -->
+    <section class="bento">
+      <div class="card col-span-12 md:col-span-12">
+        <div class="flex items-center justify-between">
+          <h2 class="font-bold text-xl">1 · 输入材料 / Inputs</h2>
+          <span class="chip">Attachments / Text / Links</span>
         </div>
+        <div class="mt-4 grid md:grid-cols-2 gap-4">
+          <div>
+            <label class="text-sm text-gray-500">项目标题（中文大字）</label>
+            <input id="title" class="mt-1 border rounded px-3 py-2 w-full" placeholder="软件注册指导原则要点" />
+          </div>
+          <div>
+            <label class="text-sm text-gray-500">输出 HTML 文件名</label>
+            <input id="outname" class="mt-1 border rounded px-3 py-2 w-full" placeholder="medsw_guidance_notes" />
+          </div>
+          <div>
+            <label class="text-sm text-gray-500">语言配比（CN:EN）</label>
+            <input id="langmix" class="mt-1 border rounded px-3 py-2 w-full" placeholder="CN:EN = 80:20" />
+          </div>
+          <div>
+            <label class="text-sm text-gray-500">在线图表（可选，占位库名）</label>
+            <input id="chartlib" class="mt-1 border rounded px-3 py-2 w-full" placeholder="ECharts / Chart.js / Observable Plot" />
+          </div>
+        </div>
+        <div class="mt-4">
+          <label class="text-sm text-gray-500">添加链接（每行一个）</label>
+          <textarea id="links" rows="4" class="mt-1 border rounded px-3 py-2 w-full" placeholder="https://..."></textarea>
+        </div>
+        <div class="mt-4">
+          <label class="text-sm text-gray-500">粘贴文本（可多段）</label>
+          <textarea id="rawtext" rows="6" class="mt-1 border rounded px-3 py-2 w-full" placeholder="可粘贴学习摘录、要点、目录…"></textarea>
+        </div>
+        <div class="mt-4">
+          <label class="text-sm text-gray-500">上传文件（仅记录文件名）</label>
+          <input id="files" type="file" multiple class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-600 hover:file:bg-orange-100" />
+          <p class="mt-1 text-xs text-gray-500">本页面不读取文件内容，仅把文件名加入指令清单；解析在 AI 端执行。</p>
+        </div>
+      </div>
+
+      <div class="card col-span-12 md:col-span-6">
+          <h2 class="font-bold text-xl">2 · 大纲生成选项 / Outline Controls</h2>
+        <div class="mt-3 grid grid-cols-1 gap-3">
+          <div class="flex items-center justify-between">
+            <label class="text-sm text-gray-600">大纲密度</label>
+            <select id="outlineDensity" class="border rounded px-3 py-2">
+              <option value="compact">精简（总字数 &lt; 800）</option>
+              <option value="standard" selected>标准（800–1200）</option>
+              <option value="detailed">详细（1500+）</option>
+            </select>
+          </div>
+          <div class="flex items-center justify-between">
+            <label class="text-sm text-gray-600">是否包含数据表</label>
+            <select id="tables" class="border rounded px-3 py-2">
+              <option value="auto" selected>自动判断</option>
+              <option value="force">强制包含</option>
+              <option value="none">不包含</option>
+            </select>
+          </div>
+          <div class="flex items-center justify-between">
+            <label class="text-sm text-gray-600">是否提供图表建议</label>
+            <label class="switch">
+              <input id="chartsHint" type="checkbox" checked />
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="flex items-center justify-between">
+            <label class="text-sm text-gray-600">每模块要点上限（3–8）</label>
+            <input id="bulletsMax" type="number" min="3" max="8" step="1" value="6" class="border rounded px-3 py-2 w-24" />
+          </div>
+          <div class="flex items-center justify-between">
+            <label class="text-sm text-gray-600">是否按法规/章节分模块</label>
+            <label class="switch">
+              <input id="moduleSplit" type="checkbox" checked />
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="card col-span-12 md:col-span-6">
+        <h2 class="font-bold text-xl">3 · 生成 / Generate</h2>
+        <p class="mt-2 text-sm text-gray-600">点击按钮，组合完整 Prompt。无需每项都填，留空会自动使用合理默认值。</p>
+        <div class="mt-4 flex flex-col gap-3">
+          <button class="btn" onclick="safeGenerate()">生成指令</button>
+          <button class="btn-outline" onclick="copyPrompt()">复制到剪贴板</button>
+          <button class="btn-outline" onclick="downloadPrompt()">下载为 .txt</button>
+        </div>
+        <div class="mt-2">
+          <button class="btn-outline" onclick="resetForm()">重置（清空所有输入）</button>
+        </div>
+        <div class="mt-6">
+          <label class="text-sm text-gray-500">快速预设</label>
+          <div class="mt-2 flex gap-2 flex-wrap">
+            <button class="chip" onclick="preset('software')">软件注册指导原则</button>
+            <button class="chip" onclick="preset('generic')">通用读书笔记</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card col-span-12">
+        <div class="flex items-center justify-between">
+          <h2 class="font-bold text-xl">4 · 生成结果 / Prompt Output</h2>
+          <span id="status" class="text-xs text-gray-500"></span>
+        </div>
+        <textarea id="output" rows="20" class="mt-3 w-full border rounded px-3 py-2 text-sm" placeholder="点击『生成指令』后会在此出现完整 Prompt"></textarea>
+      </div>
     </section>
 
-    <!-- Future Preview Section -->
-    <section class="container mx-auto px-4 py-16">
-        <div class="fade-in-up">
-            <h2 class="text-3xl md:text-4xl text-center mb-4">未来版本预告</h2>
-            <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">系统将持续进化，后续版本将集成更深入的文档智能功能，敬请期待。</p>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Feature Card 1 -->
-                <div class="feature-card">
-                    <h3 class="text-xl mb-4 flex items-center"><i class="fa-solid fa-cogs mr-3" style="color: #F05E1C;"></i>技术文档生成</h3>
-                    <ul class="space-y-2 text-sm text-gray-700 list-disc list-inside">
-                        <li>按产品需求规格，自动生成技术要求文档。</li>
-                        <li>智能填充参数与数据，加速文档编写。</li>
-                        <li>确保术语在所有文档中保持一致。</li>
-                    </ul>
-                </div>
-                <!-- Feature Card 2 -->
-                <div class="feature-card">
-                    <h3 class="text-xl mb-4 flex items-center"><i class="fa-solid fa-link mr-3" style="color: #F05E1C;"></i>长模块一致性核查</h3>
-                    <ul class="space-y-2 text-sm text-gray-700 list-disc list-inside">
-                        <li>支持临床报告等长篇内容的深度比对。</li>
-                        <li>通过语义分析，核对核心观点与数据。</li>
-                        <li>高亮显示潜在的逻辑或数据冲突。</li>
-                    </ul>
-                </div>
-                <!-- Feature Card 3 -->
-                <div class="feature-card">
-                     <h3 class="text-xl mb-4 flex items-center"><i class="fa-solid fa-stamp mr-3" style="color: #F05E1C;"></i>法规符合性核查</h3>
-                    <ul class="space-y-2 text-sm text-gray-700 list-disc list-inside">
-                        <li>自动将文档与法规要求进行逐条核对。</li>
-                        <li>一键生成合规自查清单，状态清晰。</li>
-                        <li>提示并定位不符合项，辅助审查。</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </section>
-
-
-    <!-- DARK FOOTER -->
-    <footer class="bg-gray-800 text-white py-12 no-print">
-        <div class="container mx-auto px-4 text-center">
-            <h2 class="text-3xl">开启智能合规新时代</h2>
-            <p class="mt-4 max-w-xl mx-auto text-gray-300">
-                AI-RA 系统旨在将繁琐的法规文档工作流转变为高效、精准、可控的自动化流程，让您的团队专注于创新而非文书。
-            </p>
-            <button onclick="exportHTML()" class="mt-8 px-6 py-3 rounded-md font-bold text-gray-900 transition-all hover:scale-105 active:scale-95" style="background-color: #F05E1C;">
-                <i class="fa-solid fa-download mr-2"></i> 下载本页为 HTML
-            </button>
-            <div class="mt-12 pt-8 border-t border-gray-700 text-sm text-gray-400">
-                <p>&copy; 2025 AI-RA Project. All Rights Reserved.</p>
-                <p class="mt-1">由 Gemini Pro 生成 | 设计哲学遵循用户指令 v5.0</p>
-            </div>
-        </div>
+    <!-- FOOT -->
+    <footer class="mt-8 text-center text-xs text-gray-500">
+      Made for quick workflow · Bento UI · Single-file HTML。
     </footer>
+  </div>
 
-    <!-- JAVASCRIPT -->
-    <script type="module">
-        /**
-         * Function to download the current page as a single HTML file.
-         */
-        window.exportHTML = function() {
-            const clonedDoc = document.documentElement.cloneNode(true);
-            
-            // Remove the mermaid script and the rendered SVG to keep the source clean
-            const mermaidScript = clonedDoc.querySelector('script[src*="mermaid"]');
-            if (mermaidScript) mermaidScript.remove();
-            
-            const renderedSvgs = clonedDoc.querySelectorAll('.mermaid svg');
-            renderedSvgs.forEach(svg => svg.remove());
+<script>
+  // Helpers
+  const $ = (id) => document.getElementById(id);
+  const HEX_OK = /^#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})$/;
 
-            const comment = document.createComment('\nDownloaded from AI-RA Generator.\nThis is a self-contained HTML file.\n');
-            clonedDoc.insertBefore(comment, clonedDoc.firstChild);
+  // Keep color hex synced + tolerate invalid values
+  const color = $('color');
+  const colorHex = $('colorHex');
+  function applyColor(hex){
+    const ok = HEX_OK.test(hex);
+    const val = ok ? hex : '#F05E1C';
+    document.documentElement.style.setProperty('--primary', val);
+    color.value = val;
+    colorHex.value = val;
+  }
+  color.addEventListener('input', e => applyColor(e.target.value));
+  colorHex.addEventListener('input', e => applyColor(e.target.value));
 
-            const htmlContent = clonedDoc.outerHTML;
-            const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = 'AI-RA.html';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(a.href);
-        }
+  function preset(type){
+    if(type === 'software'){
+      $('title').value = '软件注册指导原则要点';
+      $('outname').value = 'medsw_guidance_notes';
+      $('langmix').value = 'CN:EN = 80:20';
+      $('chartlib').value = 'ECharts';
+      applyColor('#F05E1C');
+    } else {
+      $('title').value = '读书笔记要点';
+      $('outname').value = 'reading_notes_site';
+      $('langmix').value = 'CN:EN = 70:30';
+      $('chartlib').value = 'Chart.js';
+      applyColor('#2F80ED');
+    }
+    $('status').textContent = '已加载预设';
+  }
 
-        /**
-         * Intersection Observer for fade-in animations on scroll.
-         */
-        document.addEventListener('DOMContentLoaded', () => {
-            const animatedElements = document.querySelectorAll('.fade-in-up');
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('is-visible');
-                    }
-                });
-            }, {
-                threshold: 0.1
-            });
-            animatedElements.forEach(el => observer.observe(el));
-        });
+  function generateDocList(){
+    const files = Array.from(($('files') && $('files').files) || []);
+    const links = (($('links') && $('links').value) || '').split('\\n').map(s=>s.trim()).filter(Boolean);
+    const textLen = (($('rawtext') && $('rawtext').value) || '').trim().length;
+    const parts = [];
+    files.forEach((f,i)=> parts.push(`- 附件${i+1}：${f.name}`));
+    links.forEach((l,i)=> parts.push(`- 链接${i+1}：${l}`));
+    if(textLen>0){ parts.push(`- 文本：已粘贴（约 ${textLen} 字）`); }
+    return parts.join('\\n') || '- （稍后补充附件/链接/文本）';
+  }
 
-        /**
-         * Mermaid.js Initialization
-         */
-        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
-        mermaid.initialize({ 
-            startOnLoad: true,
-            theme: 'base',
-            themeVariables: {
-                background: '#FFFFFF',
-                primaryColor: '#f3f4f6',
-                primaryTextColor: '#1f2937',
-                primaryBorderColor: '#e5e7eb',
-                lineColor: '#F05E1C',
-                secondaryColor: '#fde6d8',
-                tertiaryColor: '#fff'
-            }
-        });
-    </script>
+  function buildTaskAplus(){
+    const density = ($('outlineDensity') && $('outlineDensity').value) || 'standard';
+    const tables = ($('tables') && $('tables').value) || 'auto';
+    const chartsHint = !!($('chartsHint') && $('chartsHint').checked);
+    const bulletsMax = parseInt((($('bulletsMax') && $('bulletsMax').value) || '6'), 10);
+    const moduleSplit = !!($('moduleSplit') && $('moduleSplit').checked);
+
+    const densityText = {
+      compact: '精简版（总字数 < 800）',
+      standard: '标准版（800–1200）',
+      detailed: '详细版（1500+）'
+    }[density] || '标准版（800–1200）';
+
+    const tablesText = {
+      auto: '自动判断是否需要表格；如发现结构化数据则采用 Markdown 表格呈现。',
+      force: '强制包含 1–3 张数据表（如无结构化数据则基于要点构造最小表）。',
+      none: '不使用表格呈现，仅以要点列表表达。'
+    }[tables] || '自动判断是否需要表格；如发现结构化数据则采用 Markdown 表格呈现。';
+
+    const chartLine = chartsHint
+      ? '6. **数据可视化提示**：标记适合转化为图表的内容，并注明推荐图表类型（柱状/折线/饼图/关系图等）。'
+      : '6. **数据可视化提示**：如内容不适合可省略。';
+
+    const moduleSplitLine = moduleSplit
+      ? '4. **模块划分**：按法规或主题章节拆分，确保每个模块独立成段。'
+      : '4. **模块划分**：不强制按章节拆分，以叙述逻辑分段。';
+
+    return `### 任务 A+｜大纲生成方向与内容密度控制
+- **大纲篇幅**：${densityText}
+- **每模块要点上限**：${bulletsMax} 条
+- **是否包含数据表**：${tablesText}
+${moduleSplitLine}
+5. **网页映射**：标明大纲中每个模块在网页中的布局位置（Header/Main Body/Mid-Breaker/Footer）。
+${chartLine}`;
+  }
+
+  function generatePrompt(){
+    const title = (($('title') && $('title').value) || '软件注册指导原则要点').trim();
+    const primary = (($('colorHex') && $('colorHex').value) || '#F05E1C').trim();
+    const outname = (($('outname') && $('outname').value) || 'medsw_guidance_notes').trim();
+    const langmix = (($('langmix') && $('langmix').value) || 'CN:EN = 80:20').trim();
+    const chartlib = (($('chartlib') && $('chartlib').value) || '').trim();
+    const doclist = generateDocList();
+
+    const intro = `你是“读书笔记网站生成器”。我会给你若干 **附件/文本/链接**，请完成两件事：`;
+
+    const taskA = `### 任务 A｜生成系统化读书笔记（Markdown）
+1. **总纲**：用 5–9 条“超大要点”概括核心思想，每条 ≤ 18 字；并给 1 句英文小字点缀。
+2. **章节框架**：按原文**目录顺序**输出两层结构（章节标题+3–6 条要点，动宾结构）。
+3. **术语卡**：列 8–15 个关键术语：中文（加粗）/ English（小字）/ 一句话定义。
+4. **图示草稿**：给出 2–3 个“勾线图”文字草稿（说明节点与连线）。
+5. **引用溯源**：每个要点标注【Ref】如 [来源名/章节/页码或段落]。`;
+
+    const taskAplus = buildTaskAplus();
+
+    const taskB = `### 任务 B｜生成“单文件前端网页”的源码（可直接拷贝为 .html）
+**页面标题**：${title}
+
+**核心设计哲学**
+- 数字时代的印刷品：信息饱和、布局紧凑、字体突出，以视觉冲击替代留白。
+- 四段结构（必须逐字遵守）：Header（刊头） / Main Body（4+8 非对称 Bento Grid） / Mid-Breaker（中段分隔区） / Dark Footer（深色页脚）。
+
+**页面蓝图（硬性）**
+1) Header：主标题/副标题/发布日期/作者，中文大号粗体；英文为小字点缀；可用细分隔线/纹理。
+2) Main Body（12 栅格 → 4+8）：
+   - 视觉锚点区（4列）：放置**巨大、描边、空心**的字母/数字/图标，形成压倒性视觉冲击；描边颜色采用主题色。
+   - 核心信息区（8列）：紧凑卡片/列表，高密度排布；**严格按输入文本顺序**展示，不得省略任何要点。
+3) Mid‑Breaker：页面中下部全宽，背景/布局与主区明显不同，用于次要信息、数据或引用，承担节奏切分。
+4) Dark Footer：深色背景 #1f2937（或更深），对比度 ≥ 7:1，放置总结性观点或 CTA（行动号召），附版权/联系。
+
+**设计基因（必须严格执行）**
+- 字体：中文使用 Noto Serif SC（或等价回退），标题/正文字号比常规网页大 1–2 级；中文加粗，英文小字点缀。
+- 用色：纯白底 + 主题高亮色 ${primary}；可用**同一高亮色的透明度渐变**营造科技感，**不同高亮色之间禁止互相渐变**。
+- 图形化：使用**勾线风格（SVG）**制作 2–3 个关系图/流程图，线条简洁，呼应主题色。
+- 对比：用**超大数字/短词**作为章节锚点（01/02/03…），和小元素形成强烈比例反差。
+- 排版密度：卡片外间距 ≤16px，内间距 ≤16px；列表行距 1.2–1.35；强调信息饱和与分组清晰。
+
+**动效与交互**
+- 模仿 Apple 官网滚动节奏：向下滚动时元素位移/透明度/缩放轻微变化，平滑不炫技。
+- 使用 **Framer Motion（通过 CDN 引入）**；需提供 \`prefers-reduced-motion\` 友好降级（或 IntersectionObserver+CSS）。
+- 视觉锚点允许轻微视差（3–6%）与描边强调；卡片 hover 微缩放 ≤1.02。
+
+**数据可视化**
+- 可引用在线图表组件（${chartlib || 'Chart.js 或 ECharts'}），配色与字体需与主题一致；图例/坐标轴最简，强调关键数值。
+
+**图标与禁止项**
+- 图标库：Font Awesome 或 Material Icons（CDN 引入）。
+- **禁止**以 emoji 作为主要图标。
+
+**技术与交付（硬性）**
+- 技术栈：HTML5、TailwindCSS 3+、Framer Motion（CDN）、所选图表库（CDN）。
+- 输出：**单一 HTML 文件**（仅一份），CSS 允许用 CDN；JS 使用内联 <script>；包含 \`exportHTML()\`，下载文件名为 \`${outname}.html\`。
+- 配置：暴露 \`CONFIG = { primaryColor: '${primary}', langMix: '${langmix}', density: 'cozy' }\`。
+- 无障碍：语义标签完整（header/main/section/aside/footer），Tab 可聚焦，链接 hover 有下划线（非仅靠颜色区分），打印样式友好。
+
+**必须包含的内容**
+- 任务 A 的总纲/章节框架/术语卡/勾线图草稿/引用溯源，**全部**纳入网页并与 Bento 结构对齐。
+- **严格按照输入文本内容的顺序排布**，分布整齐，不要出现大段空白。
+- **不得省略**任意内容要点。`;
+
+    const materials = `**输入材料**
+${doclist}`;
+
+    const finalOut = `**最终输出**
+- 先给出 A（Markdown 笔记），再给出 A+（大纲方向参数回显），最后给出 B（完整 HTML 源码，单文件，可直接运行）。`;
+
+    const payload = `**PROMPT — BEGIN**
+
+${intro}
+
+${taskA}
+
+${taskAplus}
+
+${taskB}
+
+${materials}
+
+${finalOut}
+
+**PROMPT — END**`;
+
+    return payload;
+  }
+
+  function safeGenerate(){
+    const status = $('status');
+    try{
+      const prompt = generatePrompt();
+      $('output').value = prompt;
+      status.textContent = '✅ 已生成';
+    }catch(err){
+      $('output').value = '❌ PROMPT 生成失败：' + (err && err.message ? err.message : String(err));
+      status.textContent = '❌ 出错';
+      console.error(err);
+    }
+  }
+
+  function copyPrompt(){
+    try{
+      const el = $('output');
+      el.select();
+      document.execCommand('copy');
+      $('status').textContent = '📋 已复制到剪贴板';
+    }catch(err){
+      $('status').textContent = '⚠️ 复制失败，可手动选中复制或用下方“下载为 .txt”。';
+    }
+  }
+
+  function downloadPrompt(){
+    const text = ($('output') && $('output').value) || '';
+    const blob = new Blob(['\ufeff'+text], {type:'text/plain;charset=utf-8'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'prompt.txt'; a.click();
+    setTimeout(()=> URL.revokeObjectURL(url), 500);
+    $('status').textContent = '⬇️ 已下载 prompt.txt';
+  }
+
+  function resetForm(){
+    try{
+      // Text inputs
+      const ids = ['title','outname','langmix','chartlib','links','rawtext'];
+      ids.forEach(id => { const el = document.getElementById(id); if(el){ el.value = ''; }});
+
+      // File input
+      const filesEl = document.getElementById('files'); if(filesEl){ filesEl.value=''; }
+
+      // Color reset
+      if(document.getElementById('colorHex')){ document.getElementById('colorHex').value = '#F05E1C'; }
+      if(document.getElementById('color')){ document.getElementById('color').value = '#F05E1C'; }
+      document.documentElement.style.setProperty('--primary', '#F05E1C');
+
+      // Outline controls
+      const density = document.getElementById('outlineDensity'); if(density){ density.value = 'standard'; }
+      const tables = document.getElementById('tables'); if(tables){ tables.value = 'auto'; }
+      const charts = document.getElementById('chartsHint'); if(charts){ charts.checked = true; }
+      const bullets = document.getElementById('bulletsMax'); if(bullets){ bullets.value = 6; }
+      const moduleSplit = document.getElementById('moduleSplit'); if(moduleSplit){ moduleSplit.checked = true; }
+
+      // Output & status
+      const out = document.getElementById('output'); if(out){ out.value=''; }
+      const status = document.getElementById('status'); if(status){ status.textContent = '🧹 已重置'; }
+    }catch(e){
+      const out = document.getElementById('output'); if(out){ out.value = '❌ 重置失败：' + e.message; }
+      const status = document.getElementById('status'); if(status){ status.textContent = '❌ 重置失败'; }
+      console.error(e);
+    }
+  }
+
+</script>
+
+  <!-- Bottom signature bar -->
+  <div class="w-full mt-6 py-5 text-center text-sm bg-gray-100 border-t">🌊 <span class="font-semibold" style="color: var(--primary)">@Jianan</span> · 做医械RA圈 🩺 · 最懂AI 🤖 · 爱游泳 🏊 · 辩论选手 🎤</div>
+
 </body>
 </html>
