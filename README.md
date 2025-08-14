@@ -1,6 +1,7 @@
 # 读书笔记 · 指令生成器
 
 ## 链接🔗：https://jianan-huang0609.github.io/KnowVis/
+### 案例（软件指导原则）🔗：https://jianan-huang0609.github.io/KnowVis/Example.html
 
 ## 项目思路
 本项目是一个基于 **HTML + TailwindCSS + JavaScript** 的单文件生成器，
